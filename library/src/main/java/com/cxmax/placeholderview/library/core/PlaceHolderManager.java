@@ -2,6 +2,7 @@ package com.cxmax.placeholderview.library.core;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import com.cxmax.placeholderview.library.PlaceHolderView;
@@ -14,13 +15,13 @@ import com.cxmax.placeholderview.library.PlaceHolderView;
  * </p>
  * Created by caixi on 2018/11/26.
  */
-public class PlaceHolderPool implements IPlaceHolderPool {
+public class PlaceHolderManager implements IPlaceHolderManager {
 
     @NonNull private PlaceHolderLayout layout;
     @NonNull private PlaceHolderView.Config config;
     @NonNull private WrapperContext wrapperContext;
 
-    public PlaceHolderPool(@NonNull PlaceHolderView.Config config, @NonNull WrapperContext wrapperContext) {
+    public PlaceHolderManager(@NonNull PlaceHolderView.Config config, @NonNull WrapperContext wrapperContext) {
         this.config = config;
         this.wrapperContext = wrapperContext;
         initPlaceHolderLayout();
@@ -32,14 +33,33 @@ public class PlaceHolderPool implements IPlaceHolderPool {
         ViewGroup parent = wrapperContext.getParent();
         layout = new PlaceHolderLayout(context);
         layout.addPlaceHolders(config.getPlaceHolders());
-        ViewGroup.LayoutParams oldLayoutParams = oldContent.getLayoutParams();
-        if (parent != null) {
+        if (parent != null && oldContent != null) {
+            ViewGroup.LayoutParams oldLayoutParams = oldContent.getLayoutParams();
             parent.addView(layout, wrapperContext.getChildIndex(), oldLayoutParams);
         }
     }
 
     @Override
-    public void showPlaceHolder(Class<? extends PlaceHolder> clz) {
-        layout.showPlaceHolder(clz);
+    public void showPlaceHolder(@NonNull Class<? extends PlaceHolder> clz) {
+        showPlaceHolder(clz, null);
+    }
+
+    @Override
+    public void showPlaceHolder(@NonNull Class<? extends PlaceHolder> clz,@Nullable IExpose expose) {
+        layout.setVisibility(View.VISIBLE);
+        layout.showPlaceHolder(clz, expose);
+    }
+
+    @Override
+    public void hidePlaceHolder() {
+        layout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void release() {
+        ViewGroup parent = wrapperContext.getParent();
+        if (parent != null) {
+            parent.removeView(layout);
+        }
     }
 }

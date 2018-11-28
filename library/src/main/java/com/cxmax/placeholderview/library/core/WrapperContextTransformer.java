@@ -32,7 +32,7 @@ public class WrapperContextTransformer {
         ViewGroup contentParent = (ViewGroup) view.getParent();
         int childIndex = 0, childCount = 0;
         if (contentParent != null) {
-            childCount =  contentParent.getChildCount();
+            childCount = contentParent.getChildCount();
         }
         for (int i = 0; i < childCount; i++) {
             if (contentParent.getChildAt(i) == view) {
@@ -40,9 +40,9 @@ public class WrapperContextTransformer {
                 break;
             }
         }
-        if (contentParent != null) {
-            contentParent.removeView(view);
-        }
+//        if (contentParent != null) {
+//            contentParent.removeView(view);
+//        }
         return new WrapperContext(context, contentParent, view, childIndex);
     }
 }

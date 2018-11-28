@@ -27,6 +27,7 @@
 * 线程使用不规范
 * 内存泄漏代码
 * PlaceHolderView.onDetach调用时机不准确
+* PlaceHolderLayout 移除需调用所有callback的detach， 执行释放操作
 
 ## Listener
 MIT License

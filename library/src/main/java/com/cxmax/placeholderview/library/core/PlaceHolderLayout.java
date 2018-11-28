@@ -2,9 +2,13 @@ package com.cxmax.placeholderview.library.core;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import com.cxmax.placeholderview.library.PlaceHolderView;
+import com.cxmax.placeholderview.library.util.Utils;
+
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,9 +24,27 @@ import java.util.HashMap;
  */
 public class PlaceHolderLayout extends FrameLayout {
 
-    // todo 只用一个pool
-    @NonNull private HashMap<Class<? extends PlaceHolder>, PlaceHolder> pool = new HashMap<>();
     @NonNull private HashMap<View, PlaceHolder> children = new HashMap<>();
+    @NonNull private OnAttachStateChangeListener listener = new OnAttachStateChangeListener() {
+
+        /**
+         * when call {@link PlaceHolderView#bind(View)} , the below will be work
+         * @param v
+         */
+        @Override
+        public void onViewAttachedToWindow(View v) {
+
+        }
+
+        /**
+         * when call {@link IPlaceHolderManager#release()} ()} , the below will be work
+         * @param v
+         */
+        @Override
+        public void onViewDetachedFromWindow(View v) {
+            releaseAllRegisteredPlaceHolders();
+        }
+    };
 
     public PlaceHolderLayout(Context context) {
         this(context, null);
@@ -34,17 +56,7 @@ public class PlaceHolderLayout extends FrameLayout {
 
     public PlaceHolderLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View v) {
-
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                // todo 释放资源操作
-            }
-        });
+        addOnAttachStateChangeListener(listener);
     }
 
     public void addPlaceHolders(@NonNull Collection<Class<? extends PlaceHolder>> collection) {
@@ -52,27 +64,41 @@ public class PlaceHolderLayout extends FrameLayout {
             for (Class<? extends PlaceHolder> clz : collection) {
                 PlaceHolder holder = clz.newInstance();
                 holder.setContext(getContext());
-                pool.put(clz, holder);
+                View child = holder.getPlaceHolder();
+                children.put(child, holder);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void showPlaceHolder(Class<? extends PlaceHolder> clz) {
+    public void showPlaceHolder(@NonNull Class<? extends PlaceHolder> clz, @Nullable IPlaceHolderManager.IExpose expose) {
         if (getChildCount() > 0) {
             View child = getChildAt(0);
             notifyChildDetach(child);
             removeView(child);
         }
-        if (pool.containsKey(clz)) {
-            PlaceHolder holder = pool.get(clz);
-            if (holder != null) {
-                View child = holder.getPlaceHolder();
-                addView(child);
-                notifyChildAttach(holder, child);
+        for (PlaceHolder holder : children.values()) {
+            if (holder.getClass().equals(clz)) {
+                View child = Utils.getKeyByValue(children, holder);
+                if (child != null) {
+                    addView(child);
+                    notifyChildAttach(holder, child);
+                    if (expose != null) {
+                        expose.expose(child);
+                    }
+                }
             }
         }
+    }
+
+    private void releaseAllRegisteredPlaceHolders() {
+        if (!children.isEmpty()) {
+            for (View child : children.keySet()) {
+                notifyChildDetach(child);
+            }
+        }
+
     }
 
     private void notifyChildAttach(PlaceHolder holder, View child) {
@@ -95,7 +121,4 @@ public class PlaceHolderLayout extends FrameLayout {
             notifyChildDetach(child);
         }
     }
-
-
-
 }
