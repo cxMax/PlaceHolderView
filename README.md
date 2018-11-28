@@ -4,17 +4,20 @@
 
 ## usage
 ```java
-           1.注册 ：
-             new PlaceHolderView.Config()
-                  .addPlaceHolder(ErrorPlaceHolder.class, EmptyPlaceHolder.class, LoadingPlaceHolder.class)
-                  .build().register(this);
-           2.展示 ：
-             PlaceHolderPool.showPlaceHolder(LoadingPlaceHolder.class);
-             PlaceHolderPool.showPlaceHolder(EmptyPlaceHolder.class);
-             et...
+  1.注册 ：
+       new PlaceHolderView.Config()
+               .addPlaceHolder(ErrorPlaceHolder.class, EmptyPlaceHolder.class, LoadingPlaceHolder.class)
+               .install();
 
-           todo list :
-           1. 占位符，点击事件callback的回调还没有加入。 比如一些retry操作
+  2.在具体的View/Activity/fragment上绑定 ：
+       PlaceHolderView.getDefault().bind(View)
+
+  3.通过PlaceHolderManager来控制Show/Hide。
+       PlaceHolderManager.showPlaceHolder(EmptyPlaceHolder.class);
+       et...
+
+  4.可以在View/Activity/fragment生命周期结束时，释放
+       PlaceHolderManager.release();
  ```
 
 
