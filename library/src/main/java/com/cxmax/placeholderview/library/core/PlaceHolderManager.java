@@ -33,6 +33,7 @@ public class PlaceHolderManager implements IPlaceHolderManager {
         ViewGroup parent = wrapperContext.getParent();
         layout = new PlaceHolderLayout(context);
         layout.addPlaceHolders(config.getPlaceHolders());
+        layout.addView(oldContent);
         if (parent != null && oldContent != null) {
             ViewGroup.LayoutParams oldLayoutParams = oldContent.getLayoutParams();
             parent.addView(layout, wrapperContext.getChildIndex(), oldLayoutParams);
@@ -46,20 +47,21 @@ public class PlaceHolderManager implements IPlaceHolderManager {
 
     @Override
     public void showPlaceHolder(@NonNull Class<? extends PlaceHolder> clz,@Nullable IExpose expose) {
-        layout.setVisibility(View.VISIBLE);
         layout.showPlaceHolder(clz, expose);
     }
 
     @Override
     public void hidePlaceHolder() {
-        layout.setVisibility(View.GONE);
+        layout.hidePlaceHolder();
     }
 
     @Override
-    public void release() {
+    public void reset() {
         ViewGroup parent = wrapperContext.getParent();
+        View oldContent = wrapperContext.getOldContent();
         if (parent != null) {
             parent.removeView(layout);
+            parent.addView(oldContent, wrapperContext.getChildIndex());
         }
     }
 }

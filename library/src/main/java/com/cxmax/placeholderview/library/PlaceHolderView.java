@@ -10,7 +10,6 @@ import com.cxmax.placeholderview.library.core.PlaceHolderManager;
 import com.cxmax.placeholderview.library.core.WrapperContext;
 import com.cxmax.placeholderview.library.core.WrapperContextTransformer;
 
-
 import java.util.Arrays;
 import java.util.HashSet;
 

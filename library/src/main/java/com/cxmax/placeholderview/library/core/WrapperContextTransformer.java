@@ -40,9 +40,9 @@ public class WrapperContextTransformer {
                 break;
             }
         }
-//        if (contentParent != null) {
-//            contentParent.removeView(view);
-//        }
+        if (contentParent != null) {
+            contentParent.removeView(view);
+        }
         return new WrapperContext(context, contentParent, view, childIndex);
     }
 }

@@ -15,8 +15,8 @@ import java.util.HashMap;
 
 /**
  * @describe : 这个ViewGroup的作用是
- *                  1. 增加到目标布局的最顶层
- *                  2. 包含占位符的容器
+ *                  1. 第0个child是目标view, 第1个以后child是占位view : loading view, empty view啥啥啥的
+ *                  2. 实现了detach监听，会自动释放资源，不需要手动调用
  * @usage :
  * <p>
  * </p>
@@ -37,7 +37,7 @@ public class PlaceHolderLayout extends FrameLayout {
         }
 
         /**
-         * when call {@link IPlaceHolderManager#release()} ()} , the below will be work
+         * when call {@link IPlaceHolderManager#hidePlaceHolder()} , the below will be work
          * @param v
          */
         @Override
@@ -73,11 +73,7 @@ public class PlaceHolderLayout extends FrameLayout {
     }
 
     public void showPlaceHolder(@NonNull Class<? extends PlaceHolder> clz, @Nullable IPlaceHolderManager.IExpose expose) {
-        if (getChildCount() > 0) {
-            View child = getChildAt(0);
-            notifyChildDetach(child);
-            removeView(child);
-        }
+        hidePlaceHolder();
         for (PlaceHolder holder : children.values()) {
             if (holder.getClass().equals(clz)) {
                 View child = Utils.getKeyByValue(children, holder);
@@ -92,10 +88,22 @@ public class PlaceHolderLayout extends FrameLayout {
         }
     }
 
+    public void hidePlaceHolder() {
+        int sum = getChildCount();
+        if (sum > 1) {
+            for (int i = 1; i < sum; i++) {
+                View child = getChildAt(i);
+                notifyChildDetach(child);
+                removeView(child);
+            }
+        }
+    }
+
     private void releaseAllRegisteredPlaceHolders() {
         if (!children.isEmpty()) {
             for (View child : children.keySet()) {
                 notifyChildDetach(child);
+                removeView(child);
             }
         }
 

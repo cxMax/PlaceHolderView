@@ -43,9 +43,11 @@ public interface IPlaceHolderManager {
     public void hidePlaceHolder();
 
     /**
-     * 释放掉所有的PlaceHolder
+     * 恢复之前的布局层级，
+     * 把增加的PlaceHolderLayout 给删除掉
+     * 调用这个方法后， 就不能再次showPlaceHolder了
      */
     @MainThread
-    public void release();
+    public void reset();
 
 }
