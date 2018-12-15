@@ -71,10 +71,3 @@ fastlane/readme.md
 .idea/modules.xml
 .idea/runConfigurations.xml
 .idea/vcs.xml
-app/
-build.gradle
-gradle.properties
-gradle/
-gradlew
-gradlew.bat
-settings.gradle
