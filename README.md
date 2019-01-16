@@ -23,7 +23,7 @@
 
 ## 参考
 * https://github.com/KingJA/LoadSir
-> 缺点 ：
+> LoadSir的一些不足之处(如果有误, 请及时反馈纠正) ：
 * 线程使用不规范
 * 内存泄漏代码
 * PlaceHolderView.onDetach调用时机不准确
